@@ -1,0 +1,54 @@
+@page "/posts/{id}"
+
+@using BlazorTest.Services
+@using BlazorTest.Models
+@using System.Globalization
+
+@inject IPostRepository PostRepository
+@inject ILogger<ReadPost> Logger
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JsRuntime
+
+
+@if (_post == null)
+{
+    <p>Post not found</p>
+}
+else
+{
+    <h3>@_post.Title</h3>
+    <p>Id: @_post.Id</p>
+    <p>Content: @_post.Content</p>
+    <p>Created at: @_post.CreatedAt.ToString("G", CultureInfo.GetCultureInfo("en-US"))</p>
+    <p>Updated at: @_post.UpdatedAt.ToString("G", CultureInfo.CurrentCulture)</p>
+    <NavLink href="@($"/posts/{Id}/edit")">Modify</NavLink>
+    <button @onclick="DeletePost">Delete</button>
+}
+
+@code {
+    [Parameter]
+    public string? Id { get; set; }
+    private Post? _post;
+    
+
+    protected override void OnInitialized()
+    {
+        _post = PostRepository.GetPost(Id);
+        Logger.LogInformation("Post {Id} has been loaded", Id);
+    }
+    
+    private async Task<bool> Confirm()
+    {
+        return await JsRuntime.InvokeAsync<bool>("confirm", "Are you sure?");
+    }
+    
+    private async Task DeletePost()
+    {
+        if (await Confirm())
+        {
+            PostRepository.DeletePost(Id);
+            Logger.LogInformation("Post {Id} has been deleted", Id);
+            NavigationManager.NavigateTo("/");
+        }
+    }
+}

@@ -1,0 +1,30 @@
+﻿@page "/"
+
+@using BlazorTest.Models
+@using BlazorTest.Services
+
+@inject IPostRepository PostRepository
+
+<PageTitle>Liste des posts</PageTitle>
+
+<h1>Liste des posts</h1>
+
+<NavLink href="/posts/create">Créer un post</NavLink>
+
+<ul>
+    @foreach (var post in _posts)
+    {
+        <li>
+            <NavLink href="@($"/posts/{post.Id}")">@post.Title</NavLink>
+        </li>
+    }
+</ul>
+
+@code {
+    private Post[] _posts = Array.Empty<Post>();
+
+    protected override void OnInitialized()
+    {
+        _posts = PostRepository.GetAll().ToArray();
+    }
+}

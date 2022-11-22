@@ -1,0 +1,36 @@
+@page "/posts/create"
+@using BlazorTest.Models
+@using BlazorTest.Services
+
+@inject ILogger<CreatePost> Logger
+@inject IPostRepository PostRepository
+@inject NavigationManager NavigationManager
+
+<h3>Create Post</h3>
+
+<EditForm Model="@_post" OnValidSubmit="@HandleValidSubmit">
+    <p>
+        <label>
+            Title :
+            <InputText @bind-Value="_post.Title"/>
+        </label>
+    </p>
+    <p>
+        <label>
+            Content :
+            <InputTextArea @bind-Value="_post.Content"/>
+        </label>
+    </p>
+    <button type="submit">Submit</button>
+</EditForm>
+
+@code {
+    private readonly Post _post = new Post();
+
+    private void HandleValidSubmit()
+    {
+        Logger.LogInformation("Submitting post {@Post}", _post);
+        PostRepository.AddPost(_post);
+        NavigationManager.NavigateTo("/");
+    }
+}

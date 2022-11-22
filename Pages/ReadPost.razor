@@ -29,22 +29,25 @@ else
     [Parameter]
     public string? Id { get; set; }
     private Post? _post;
-    
+
 
     protected override void OnInitialized()
     {
-        _post = PostRepository.GetPost(Id);
-        Logger.LogInformation("Post {Id} has been loaded", Id);
+        if (Id != null)
+        {
+            _post = PostRepository.GetPost(Id);
+            Logger.LogInformation("Post {Id} has been loaded", Id);
+        }
     }
-    
+
     private async Task<bool> Confirm()
     {
         return await JsRuntime.InvokeAsync<bool>("confirm", "Are you sure?");
     }
-    
+
     private async Task DeletePost()
     {
-        if (await Confirm())
+        if (await Confirm() && Id != null)
         {
             PostRepository.DeletePost(Id);
             Logger.LogInformation("Post {Id} has been deleted", Id);

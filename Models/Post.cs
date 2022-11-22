@@ -12,6 +12,8 @@ public class Post
     public Post()
     {
         _id = Guid.NewGuid().ToString();
+        _title = string.Empty;
+        _content = string.Empty;
         _createdAt = DateTime.Now;
         _updatedAt = DateTime.Now;
     }
